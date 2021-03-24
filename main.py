@@ -21,8 +21,8 @@ from azure.iot.device import constant, Message, MethodResponse
 model_id = ""
 # For Multiple components
 import pnp_helper
-windows_device_info_component_name = "WindowsDeviceInfo1"
-linux_device_info_component_name = "LinuxDeviceInfo1"
+windows_device_info_component_name = "iBaseBaseInfo1"
+linux_device_info_component_name = "iBaseLinuxInfo1"
 #================#
 global period
 period = 2
