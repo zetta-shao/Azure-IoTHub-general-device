@@ -5,6 +5,7 @@
 ################################################
 #!/bin/bash
 # set the STRING variable
+export IOTHUB_DEVICE_MODELID=""
 export IOTHUB_DEVICE_SECURITY_TYPE=""
 export IOTHUB_DEVICE_DPS_ENDPOINT=""
 export IOTHUB_DEVICE_DPS_ID_SCOPE=""

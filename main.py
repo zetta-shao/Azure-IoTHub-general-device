@@ -18,11 +18,11 @@ from azure.iot.device.aio import ProvisioningDeviceClient
 from azure.iot.device import constant, Message, MethodResponse
 
 ## for DPS Testing
-model_id = ""
+model_id = os.getenv("IOTHUB_DEVICE_MODELID")
 # For Multiple components
 import pnp_helper
-windows_device_info_component_name = "BaseInfo1"
-linux_device_info_component_name = "LnuxInfo1"
+windows_device_info_component_name = "WindowsDeviceInfo1"
+linux_device_info_component_name = "LinuxDeviceInfo1"
 #================#
 global period
 period = 2
