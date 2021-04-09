@@ -76,25 +76,30 @@ async def property_update(device_client,os_type,machine):
             cpuInfo = ' '.join(os.popen('lscpu |grep "Model name"').read().split(':')[1].split() )
             biosManufacturer = ' '.join(os.popen('cat /sys/class/dmi/id/bios_vendor').read().split() )
             biosVersion = ' '.join(os.popen('cat /sys/class/dmi/id/bios_version').read().split() )
-            baseboardManufacturer = ' '.join(os.popen('cat /sys/class/dmi/id/board_vendor').read().split() )
-            baseboardSerialNumber = ' '.join(os.popen('sudo cat /sys/class/dmi/id/board_serial').read().split() )
-            baseboardProduct = ' '.join(os.popen('cat /sys/class/dmi/id/board_name').read().split() )
+            #baseboardManufacturer = ' '.join(os.popen('cat /sys/class/dmi/id/board_vendor').read().split() )
+            #baseboardSerialNumber = ' '.join(os.popen('sudo cat /sys/class/dmi/id/board_serial').read().split() )
+            #baseboardProduct = ' '.join(os.popen('cat /sys/class/dmi/id/board_name').read().split() )
+            baseboardManufacturer = 'ibase'
+            baseboardSerialNumber = 'N/A'
+            baseboardProduct = 'N/A'
             # Linux Only
+            currentTemp = psutil.sensors_temperatures()['coretemp'][0][1]
             highTemp = psutil.sensors_temperatures()['coretemp'][0][2]
             criticalTemp = psutil.sensors_temperatures()['coretemp'][0][3]
         else :
             biosManufacturer = 'N/A'
             biosVersion = 'N/A'
-            baseboardManufacturer = 'N/A'
+            baseboardManufacturer = 'iBASE'
             baseboardSerialNumber = 'N/A'
-            baseboardProduct = 'N/A'
+            baseboardProduct = 'IBR210'
             try:
                 cpuInfo = ' '.join(os.popen('lscpu |grep "Model name"').read().split(':')[1].split() )
             except:
                 cpuInfo = machine
             try:
-                highTemp = psutil.sensors_temperatures()['soc-thermal'][0][2]
-                criticalTemp = psutil.sensors_temperatures()['soc-thermal'][0][3]
+                currentTemp = psutil.sensors_temperatures()['tcn75'][0][1]
+                highTemp = psutil.sensors_temperatures()['tcn75'][0][2]
+                criticalTemp = psutil.sensors_temperatures()['tcn75'][0][3]
             except:
                 highTemp = 0
                 criticalTemp = 0    
@@ -167,6 +172,7 @@ async def property_update(device_client,os_type,machine):
             ipPublic=ipPublic,
             highTemp=highTemp,
             criticalTemp=criticalTemp,
+	    currentTemp=currentTemp,
         )
     global property_updates
     property_updates = asyncio.gather(
@@ -186,8 +192,7 @@ async def telemetery_update(device_client,os_type,machine):
             if 'x86' in machine:
                 currentTemp = psutil.sensors_temperatures()['coretemp'][0][1]
             else:
-                currentTemp = psutil.sensors_temperatures()['soc-thermal'][0][1]
-                currentTempGPU = psutil.sensors_temperatures()['gpu-thermal'][0][1]
+                currentTemp = psutil.sensors_temperatures()['tcn75'][0][1]
         
         json_msg = {}
         json_msg["cpuLoading"]=cpuLoading
@@ -205,11 +210,11 @@ async def telemetery_update(device_client,os_type,machine):
             await send_telemetry_with_component_name(device_client, json_msg, windows_device_info_component_name)
         elif os_type == "Linux":
             await send_telemetry_with_component_name(device_client, json_msg, linux_device_info_component_name)
-            if not 'x86' in machine:
-                json_msg_gpu = {}
-                msg = json_msg_gpu["currentTempGPU"]=currentTempGPU
-                print('[DEBUG] Sending Telemetry :{m}'.format(m=msg))
-                await send_telemetry_with_component_name(device_client,msg)
+            #if not 'x86' in machine:
+            #    json_msg_gpu = {}
+            #    msg = json_msg_gpu["currentTempGPU"]=currentTempGPU
+            #    print('[DEBUG] Sending Telemetry :{m}'.format(m=msg))
+            #    await send_telemetry_with_component_name(device_client,msg)
         await asyncio.sleep(period)
 
 async def reboot_handler(values):
